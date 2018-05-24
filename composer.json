@@ -1,0 +1,25 @@
+{
+    "name": "glueapps/components",
+    "require-dev": {
+        "phpunit/phpunit": "^7.1"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Andy Daniel Navarro Taño",
+            "email": "andaniel05@gmail.com"
+        },
+        {
+            "name": "GlueApps Community"
+        }
+    ],
+    "require": {
+        "php": ">=7.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "GlueApps\\Components\\": "src/",
+            "GlueApps\\Components\\Tests\\": "tests/"
+        }
+    }
+}
