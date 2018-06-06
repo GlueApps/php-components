@@ -45,9 +45,9 @@ abstract class AbstractComponent
     /**
      * Returns the parent.
      *
-     * @return ?AbstractComponent
+     * @return ?AbstractParentComponent
      */
-    public function getParent(): ?AbstractComponent
+    public function getParent(): ?AbstractParentComponent
     {
         return $this->parent;
     }
@@ -55,10 +55,18 @@ abstract class AbstractComponent
     /**
      * Assigns the parent.
      *
-     * @param ?AbstractComponent $parent
+     * Registers this component as child of the parent. This behavior may be
+     * cancelled if second argument is specified as false.
+     *
+     * @param ?AbstractParentComponent $parent  The parent.
+     * @param bool $registersChild              When is true this component will be registered as child of the parent.
      */
-    public function setParent(?AbstractComponent $parent)
+    public function setParent(?AbstractParentComponent $parent, bool $registersChild = true)
     {
         $this->parent = $parent;
+
+        if ($registersChild) {
+            $parent->addChild($this);
+        }
     }
 }

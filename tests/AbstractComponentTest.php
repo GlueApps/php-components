@@ -5,6 +5,7 @@ namespace GlueApps\Components\Tests;
 
 use PHPUnit\Framework\TestCase;
 use GlueApps\Components\AbstractComponent;
+use GlueApps\Components\AbstractParentComponent;
 
 /**
  * @author Andy Daniel Navarro Taño <andaniel05@gmail.com>
@@ -14,6 +15,11 @@ class AbstractComponentTest extends TestCase
     public function getComponent()
     {
         return $this->getMockForAbstractClass(AbstractComponent::class);
+    }
+
+    public function getParent()
+    {
+        return $this->getMockForAbstractClass(AbstractParentComponent::class);
     }
 
     public function setUp()
@@ -49,10 +55,28 @@ class AbstractComponentTest extends TestCase
 
     public function testSetParentAssignsTheParent()
     {
-        $parent = $this->getComponent();
+        $parent = $this->getParent();
 
         $this->component->setParent($parent);
 
         $this->assertEquals($parent, $this->component->getParent());
+    }
+
+    public function testSetParentRegistersTheComponentAsChildOfTheParent()
+    {
+        $parent = $this->getParent();
+
+        $this->component->setParent($parent);
+
+        $this->assertTrue($parent->hasChild($this->component));
+    }
+
+    public function testSetParentDoesNotRegistersTheComponentAsChildOfTheParentWhenSecondArgumentIsFalse()
+    {
+        $parent = $this->getParent();
+
+        $this->component->setParent($parent, false);
+
+        $this->assertFalse($parent->hasChild($this->component));
     }
 }

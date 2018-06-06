@@ -39,7 +39,7 @@ abstract class AbstractParentComponent extends AbstractComponent
     /**
      * Search a child by his unique identifier.
      *
-     * @param  string $uid
+     * @param  string $uid Unique identifier
      * @return ?AbstractComponent
      */
     public function getChild(string $uid): ?AbstractComponent
@@ -50,10 +50,27 @@ abstract class AbstractParentComponent extends AbstractComponent
     /**
      * Remove a child by his unique identifier.
      *
-     * @param  string $uid
+     * @param  string $uid Unique identifier
      */
     public function dropChild(string $uid)
     {
         unset($this->children[$uid]);
+    }
+
+    /**
+     * Checks if contains the searched child.
+     *
+     * @param  AbstractComponent|string  $child
+     * @return boolean
+     */
+    public function hasChild($child): bool
+    {
+        if (is_string($child)) {
+            $uid = $child;
+        } elseif ($child instanceof AbstractComponent) {
+            $uid = $child->getUId();
+        }
+
+        return isset($this->children[$uid]);
     }
 }

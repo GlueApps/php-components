@@ -89,4 +89,27 @@ class AbstractParentComponentTest extends TestCase
 
         $this->assertEquals($expected, $this->component->children());
     }
+
+    public function testHasChildReturnsTrueWhenExistsOneChildWithTheSearchedUId()
+    {
+        $this->addThreeChilds();
+        $uid = $this->child1->getUId();
+
+        $this->assertTrue($this->component->hasChild($uid));
+    }
+
+    public function testHasChildReturnsFalseWhenNotExistsOneChildWithTheSearchedUId()
+    {
+        $child = $this->getComponent();
+        $uid = $child->getUId();
+
+        $this->assertFalse($this->component->hasChild($uid));
+    }
+
+    public function testHasChildReturnsTrueWhenTheSearchedChildAlreadyIsRegistered()
+    {
+        $this->addThreeChilds();
+
+        $this->assertTrue($this->component->hasChild($this->child1));
+    }
 }
