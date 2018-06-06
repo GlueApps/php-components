@@ -6,6 +6,9 @@ namespace GlueApps\Components\Tests;
 use PHPUnit\Framework\TestCase;
 use GlueApps\Components\AbstractComponent;
 use GlueApps\Components\AbstractParentComponent;
+use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @author Andy Daniel Navarro Taño <andaniel05@gmail.com>
@@ -78,5 +81,38 @@ class AbstractComponentTest extends TestCase
         $this->component->setParent($parent, false);
 
         $this->assertFalse($parent->hasChild($this->component));
+    }
+
+    public function testGetDispatcherReturnsTheSymfonyEventDispatcher()
+    {
+        $this->assertInstanceOf(EventDispatcher::class, $this->component->getDispatcher());
+    }
+
+    public function testSetDispatcherAssignsTheEventDispatcer()
+    {
+        $dispatcher = $this->createMock(EventDispatcherInterface::class);
+
+        $this->component->setDispatcher($dispatcher);
+
+        $this->assertEquals($dispatcher, $this->component->getDispatcher());
+    }
+
+    public function testDispatchInvokeToDispatchMethodOnTheEventDispatcher()
+    {
+        $eventName = uniqid();
+        $event = $this->createMock(Event::class);
+
+        $dispatcher = $this->getMockBuilder(EventDispatcherInterface::class)
+            ->setMethods(['dispatch'])
+            ->getMockForAbstractClass();
+        $dispatcher->expects($this->once())
+            ->method('dispatch')
+            ->with(
+                $this->equalTo($eventName),
+                $this->equalTo($event)
+            );
+
+        $this->component->setDispatcher($dispatcher);
+        $this->component->dispatch($eventName, $event); // Act
     }
 }

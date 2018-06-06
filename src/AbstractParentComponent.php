@@ -29,11 +29,12 @@ abstract class AbstractParentComponent extends AbstractComponent
     /**
      * Insert a child component.
      *
-     * Registers this component as parent of the child. This behavior may be cancelled
-     * if second argument is specified as false.
+     * Registers this component as parent of the child. This behavior may be
+     * cancelled if second argument is specified as false.
      *
      * @param AbstractComponent $child  The child to insert.
-     * @param bool $assignsParent       When is true this component is registered as parent of the child.
+     * @param bool $assignsParent       When is true this component is registered
+     *                                  as parent of the child.
      */
     public function addChild(AbstractComponent $child, bool $assignsParent = true)
     {

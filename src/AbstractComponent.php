@@ -3,6 +3,10 @@ declare(strict_types=1);
 
 namespace GlueApps\Components;
 
+use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+
 /**
  * The base component class.
  *
@@ -22,6 +26,19 @@ abstract class AbstractComponent
      * @var ?AbstractComponent
      */
     protected $parent;
+
+    /**
+     * @var EventDispatcher
+     */
+    protected $dispatcher;
+
+    /**
+     * Constructor.
+     */
+    public function __construct()
+    {
+        $this->dispatcher = new EventDispatcher;
+    }
 
     /**
      * Returns the unique identifier of the component.
@@ -59,7 +76,8 @@ abstract class AbstractComponent
      * cancelled if second argument is specified as false.
      *
      * @param ?AbstractParentComponent $parent  The parent.
-     * @param bool $registersChild              When is true this component will be registered as child of the parent.
+     * @param bool $registersChild              When is true this component will
+     *                                          be registered as child of the parent.
      */
     public function setParent(?AbstractParentComponent $parent, bool $registersChild = true)
     {
@@ -68,5 +86,36 @@ abstract class AbstractComponent
         if ($registersChild) {
             $parent->addChild($this, false);
         }
+    }
+
+    /**
+     * Returns the event dispatcher.
+     *
+     * @return EventDispatcherInterface
+     */
+    public function getDispatcher(): EventDispatcherInterface
+    {
+        return $this->dispatcher;
+    }
+
+    /**
+     * Assigns the event dispatcher.
+     *
+     * @param EventDispatcherInterface $dispatcher
+     */
+    public function setDispatcher(EventDispatcherInterface $dispatcher)
+    {
+        $this->dispatcher = $dispatcher;
+    }
+
+    /**
+     * Dispatch an event on this component.
+     *
+     * @param  string     $eventName
+     * @param  Event|null $event
+     */
+    public function dispatch(string $eventName, Event $event = null)
+    {
+        $this->dispatcher->dispatch($eventName, $event);
     }
 }
