@@ -122,6 +122,13 @@ class AbstractParentComponentTest extends TestCase
         $this->assertFalse($this->component->hasChild($uid));
     }
 
+    public function testHasChildReturnsFalseWhenTheSearchUIdIsNotStringOrInstanceOfComponent()
+    {
+        $this->assertFalse($this->component->hasChild(frand()));
+        $this->assertFalse($this->component->hasChild([]));
+        $this->assertFalse($this->component->hasChild(true));
+    }
+
     public function testHasChildReturnsTrueWhenTheSearchedChildAlreadyIsRegistered()
     {
         $this->addThreeChilds();

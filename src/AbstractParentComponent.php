@@ -27,7 +27,7 @@ abstract class AbstractParentComponent extends AbstractComponent
     }
 
     /**
-     * Insert a child component.
+     * Inserts a child component.
      *
      * Registers this component as parent of the child. This behavior may be
      * cancelled if second argument is specified as false.
@@ -57,7 +57,7 @@ abstract class AbstractParentComponent extends AbstractComponent
     }
 
     /**
-     * Remove a child by his unique identifier.
+     * Removes a child by his unique identifier.
      *
      * @param  string $uid Unique identifier
      */
@@ -78,6 +78,8 @@ abstract class AbstractParentComponent extends AbstractComponent
             $uid = $child;
         } elseif ($child instanceof AbstractComponent) {
             $uid = $child->getUId();
+        } else {
+            return false;
         }
 
         return isset($this->children[$uid]);

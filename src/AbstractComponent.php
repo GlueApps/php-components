@@ -109,7 +109,7 @@ abstract class AbstractComponent
     }
 
     /**
-     * Dispatch an event on this component.
+     * Dispatchs an event on this component.
      *
      * @param  string     $eventName
      * @param  Event|null $event
