@@ -66,7 +66,7 @@ abstract class AbstractComponent
         $this->parent = $parent;
 
         if ($registersChild) {
-            $parent->addChild($this);
+            $parent->addChild($this, false);
         }
     }
 }

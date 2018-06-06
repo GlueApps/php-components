@@ -60,6 +60,22 @@ class AbstractParentComponentTest extends TestCase
         $this->assertEquals($expected, $this->component->children());
     }
 
+    public function testAddChildRegistersTheComponentAsParentOfTheChild()
+    {
+        $this->addThreeChilds();
+
+        $this->assertEquals($this->component, $this->child1->getParent());
+    }
+
+    public function testAddChildDoesNotRegisterTheComponentAsParentOfTheChildWhenSecondArgumentIsFalse()
+    {
+        $child = $this->getComponent();
+
+        $this->component->addChild($child, false);
+
+        $this->assertNotEquals($this->component, $child->getParent());
+    }
+
     public function testGetChildReturnsTheSearchedChildWhenItExists()
     {
         $this->addThreeChilds();
