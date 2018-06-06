@@ -46,6 +46,20 @@ abstract class AbstractParentComponent extends AbstractComponent
     }
 
     /**
+     * Inserts several childs at once.
+     *
+     * @param array $childs Child List
+     */
+    public function addChilds(...$childs)
+    {
+        foreach ($childs as $child) {
+            if ($child instanceof AbstractComponent) {
+                $this->addChild($child);
+            }
+        }
+    }
+
+    /**
      * Search a child by his unique identifier.
      *
      * @param  string $uid Unique identifier

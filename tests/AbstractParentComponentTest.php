@@ -76,6 +76,44 @@ class AbstractParentComponentTest extends TestCase
         $this->assertNotEquals($this->component, $child->getParent());
     }
 
+    public function testAddChildsMayInsertSeveralChildsAtOnce()
+    {
+        $child1 = $this->createMock(AbstractComponent::class);
+        $child2 = $this->createMock(AbstractComponent::class);
+        $child3 = $this->createMock(AbstractComponent::class);
+
+        $component = $this->getMockBuilder(AbstractParentComponent::class)
+            ->setMethods(['addChild'])
+            ->getMockForAbstractClass();
+        $component->expects($this->exactly(3))
+            ->method('addChild')
+            ->withConsecutive(
+                [$this->equalTo($child1)],
+                [$this->equalTo($child2)],
+                [$this->equalTo($child3)]
+            );
+
+        $component->addChilds($child1, $child2, $child3);
+    }
+
+    public function testAddChildsIgnoreValuesDifferentToComponents()
+    {
+        $child1 = $this->createMock(AbstractComponent::class);
+        $child2 = $this->createMock(AbstractComponent::class);
+
+        $component = $this->getMockBuilder(AbstractParentComponent::class)
+            ->setMethods(['addChild'])
+            ->getMockForAbstractClass();
+        $component->expects($this->exactly(2))
+            ->method('addChild')
+            ->withConsecutive(
+                [$this->equalTo($child1)],
+                [$this->equalTo($child2)]
+            );
+
+        $component->addChilds($child1, uniqid(), frand(), true, $child2);
+    }
+
     public function testGetChildReturnsTheSearchedChildWhenItExists()
     {
         $this->addThreeChilds();
