@@ -3,23 +3,17 @@ declare(strict_types=1);
 
 namespace GlueApps\Components\Tests;
 
-use PHPUnit\Framework\TestCase;
 use GlueApps\Components\AbstractComponent;
 use GlueApps\Components\AbstractParentComponent;
 
 /**
  * @author Andy Daniel Navarro Taño <andaniel05@gmail.com>
  */
-class AbstractParentComponentTest extends TestCase
+class AbstractParentComponentTest extends BaseTestCase
 {
-    public function getComponent()
-    {
-        return $this->getMockForAbstractClass(AbstractParentComponent::class);
-    }
-
     public function setUp()
     {
-        $this->component = $this->getComponent();
+        $this->component = $this->createParentComponent();
     }
 
     public function testIsInstanceOfAbstractComponent()
@@ -38,9 +32,9 @@ class AbstractParentComponentTest extends TestCase
 
     public function addThreeChilds()
     {
-        $this->child1 = $this->getComponent();
-        $this->child2 = $this->getComponent();
-        $this->child3 = $this->getComponent();
+        $this->child1 = $this->createParentComponent();
+        $this->child2 = $this->createParentComponent();
+        $this->child3 = $this->createParentComponent();
 
         $this->component->addChild($this->child1);
         $this->component->addChild($this->child2);
@@ -69,7 +63,7 @@ class AbstractParentComponentTest extends TestCase
 
     public function testAddChildDoesNotRegisterTheComponentAsParentOfTheChildWhenSecondArgumentIsFalse()
     {
-        $child = $this->getComponent();
+        $child = $this->createParentComponent();
 
         $this->component->addChild($child, false);
 
@@ -154,7 +148,7 @@ class AbstractParentComponentTest extends TestCase
 
     public function testHasChildReturnsFalseWhenNotExistsOneChildWithTheSearchedUId()
     {
-        $child = $this->getComponent();
+        $child = $this->createParentComponent();
         $uid = $child->getUId();
 
         $this->assertFalse($this->component->hasChild($uid));
@@ -172,56 +166,6 @@ class AbstractParentComponentTest extends TestCase
         $this->addThreeChilds();
 
         $this->assertTrue($this->component->hasChild($this->child1));
-    }
-
-    public function createFiveComponents()
-    {
-        $this->component1 = $this->getComponent();
-        $this->component2 = $this->getComponent();
-        $this->component3 = $this->getComponent();
-        $this->component4 = $this->getComponent();
-        $this->component5 = $this->createMock(AbstractComponent::class);
-    }
-
-    /**
-     * component
-     *     |___component1
-     *             |___component2
-     *                     |___component3
-     *                             |___component4
-     *                                     |___component5
-     */
-    public function buildTree1()
-    {
-        $this->createFiveComponents();
-
-        $this->component->addChild($this->component1);
-        $this->component1->addChild($this->component2);
-        $this->component2->addChild($this->component3);
-        $this->component3->addChild($this->component4);
-        $this->component4->addChild($this->component5);
-    }
-
-    /**
-     * component
-     *     |___component1
-     *     |       |___component3
-     *     |               |___component5
-     *     |
-     *     |___component2
-     *             |___component4
-     */
-    public function buildTree2()
-    {
-        $this->createFiveComponents();
-
-        $this->component->addChild($this->component1);
-        $this->component->addChild($this->component2);
-
-        $this->component1->addChild($this->component3);
-        $this->component3->addChild($this->component5);
-
-        $this->component2->addChild($this->component4);
     }
 
     public function testTraverseForTree1()

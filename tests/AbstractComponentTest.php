@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace GlueApps\Components\Tests;
 
-use PHPUnit\Framework\TestCase;
 use GlueApps\Components\AbstractComponent;
 use GlueApps\Components\AbstractParentComponent;
 use Symfony\Component\EventDispatcher\Event;
@@ -13,21 +12,11 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 /**
  * @author Andy Daniel Navarro Taño <andaniel05@gmail.com>
  */
-class AbstractComponentTest extends TestCase
+class AbstractComponentTest extends BaseTestCase
 {
-    public function getComponent()
-    {
-        return $this->getMockForAbstractClass(AbstractComponent::class);
-    }
-
-    public function getParent()
-    {
-        return $this->getMockForAbstractClass(AbstractParentComponent::class);
-    }
-
     public function setUp()
     {
-        $this->component = $this->getComponent();
+        $this->component = $this->createComponent();
     }
 
     public function testTheUniqueIdentifierEndsWithARandomWord()
@@ -58,7 +47,7 @@ class AbstractComponentTest extends TestCase
 
     public function testSetParentAssignsTheParent()
     {
-        $parent = $this->getParent();
+        $parent = $this->createParentComponent();
 
         $this->component->setParent($parent);
 
@@ -67,7 +56,7 @@ class AbstractComponentTest extends TestCase
 
     public function testSetParentRegistersTheComponentAsChildOfTheParent()
     {
-        $parent = $this->getParent();
+        $parent = $this->createParentComponent();
 
         $this->component->setParent($parent);
 
@@ -76,7 +65,7 @@ class AbstractComponentTest extends TestCase
 
     public function testSetParentDoesNotRegistersTheComponentAsChildOfTheParentWhenSecondArgumentIsFalse()
     {
-        $parent = $this->getParent();
+        $parent = $this->createParentComponent();
 
         $this->component->setParent($parent, false);
 
