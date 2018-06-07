@@ -257,4 +257,19 @@ class AbstractParentComponentTest extends TestCase
         $iterator->next();
         $this->assertEquals($this->component4, $iterator->current());
     }
+
+    public function testGetComponentByUIdDoesSearchTheComponentForAllTheTree()
+    {
+        $this->buildTree1();
+
+        $this->assertEquals(
+            $this->component5, $this->component->getComponentByUId($this->component5->getUId())
+        );
+    }
+
+    public function testGetComponentByUIdReturnsNullWhenTheComponentIsNotFound()
+    {
+        $uid = uniqid();
+        $this->assertNull($this->component->getComponentByUId($uid));
+    }
 }

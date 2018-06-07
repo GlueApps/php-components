@@ -119,4 +119,18 @@ abstract class AbstractParentComponent extends AbstractComponent
 
         return $generator($this->children);
     }
+
+    public function getComponentByUId(string $uid): ?AbstractComponent
+    {
+        $result = null;
+
+        foreach ($this->traverse() as $component) {
+            if ($component->getUId() === $uid) {
+                $result = $component;
+                break;
+            }
+        }
+
+        return $result;
+    }
 }
