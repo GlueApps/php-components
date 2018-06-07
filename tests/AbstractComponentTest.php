@@ -152,4 +152,17 @@ class AbstractComponentTest extends BaseTestCase
         $this->assertEquals($expectedKeys, array_keys($parents));
         $this->assertEquals($expectedValues, array_values($parents));
     }
+
+    public function testGetRootReturnNullWhenParentIsNull()
+    {
+        $this->assertNull($this->component->getRoot());
+    }
+
+    public function testGetRootReturnTheRootComponentOfTheTree()
+    {
+        $this->createTree1();
+
+        $this->assertEquals($this->root, $this->component5->getRoot());
+        $this->assertEquals($this->root, $this->component1->getRoot());
+    }
 }

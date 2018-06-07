@@ -136,4 +136,18 @@ abstract class AbstractComponent
 
         return $result;
     }
+
+    /**
+     * Returns the root component of the tree.
+     *
+     * If the component has not a parent then returns null.
+     *
+     * @return ?AbstractParentComponent
+     */
+    public function getRoot(): ?AbstractParentComponent
+    {
+        $parents = $this->parents();
+
+        return empty($parents) ? null : array_pop($parents);
+    }
 }
