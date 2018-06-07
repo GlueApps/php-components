@@ -170,9 +170,9 @@ class AbstractParentComponentTest extends BaseTestCase
 
     public function testTraverseForTree1()
     {
-        $this->buildTree1();
+        $this->createTree1();
 
-        $iterator = $this->component->traverse();
+        $iterator = $this->root->traverse();
 
         $this->assertEquals($this->component1, $iterator->current());
         $iterator->next();
@@ -187,9 +187,9 @@ class AbstractParentComponentTest extends BaseTestCase
 
     public function testTraverseForTree2()
     {
-        $this->buildTree2();
+        $this->createTree2();
 
-        $iterator = $this->component->traverse();
+        $iterator = $this->root->traverse();
 
         $this->assertEquals($this->component1, $iterator->current());
         $iterator->next();
@@ -204,13 +204,13 @@ class AbstractParentComponentTest extends BaseTestCase
 
     public function testGetComponentByUIdDoesSearchTheComponentForAllTheTree()
     {
-        $this->buildTree1();
+        $this->createTree1();
 
         $this->assertEquals(
-            $this->component4, $this->component->getComponentByUId($this->component4->getUId())
+            $this->component4, $this->root->getComponentByUId($this->component4->getUId())
         );
         $this->assertEquals(
-            $this->component5, $this->component->getComponentByUId($this->component5->getUId())
+            $this->component5, $this->root->getComponentByUId($this->component5->getUId())
         );
     }
 
