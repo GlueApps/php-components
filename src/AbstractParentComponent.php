@@ -98,4 +98,25 @@ abstract class AbstractParentComponent extends AbstractComponent
 
         return isset($this->children[$uid]);
     }
+
+    /**
+     * Iterate over each child of the tree.
+     *
+     * @return iterable
+     */
+    public function traverse(): iterable
+    {
+        $generator = function (array $components) use (&$generator) {
+            foreach ($components as $component) {
+                yield $component;
+                if ($component instanceof AbstractParentComponent) {
+                    yield from $generator($component->children());
+                }
+            }
+
+            return;
+        };
+
+        return $generator($this->children);
+    }
 }

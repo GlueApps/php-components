@@ -173,4 +173,88 @@ class AbstractParentComponentTest extends TestCase
 
         $this->assertTrue($this->component->hasChild($this->child1));
     }
+
+    public function createFiveComponents()
+    {
+        $this->component1 = $this->getComponent();
+        $this->component2 = $this->getComponent();
+        $this->component3 = $this->getComponent();
+        $this->component4 = $this->getComponent();
+        $this->component5 = $this->createMock(AbstractComponent::class);
+    }
+
+    /**
+     * component
+     *     |___component1
+     *             |___component2
+     *                     |___component3
+     *                             |___component4
+     *                                     |___component5
+     */
+    public function buildTree1()
+    {
+        $this->createFiveComponents();
+
+        $this->component->addChild($this->component1);
+        $this->component1->addChild($this->component2);
+        $this->component2->addChild($this->component3);
+        $this->component3->addChild($this->component4);
+        $this->component4->addChild($this->component5);
+    }
+
+    /**
+     * component
+     *     |___component1
+     *     |       |___component3
+     *     |               |___component5
+     *     |
+     *     |___component2
+     *             |___component4
+     */
+    public function buildTree2()
+    {
+        $this->createFiveComponents();
+
+        $this->component->addChild($this->component1);
+        $this->component->addChild($this->component2);
+
+        $this->component1->addChild($this->component3);
+        $this->component3->addChild($this->component5);
+
+        $this->component2->addChild($this->component4);
+    }
+
+    public function testTraverseForTree1()
+    {
+        $this->buildTree1();
+
+        $iterator = $this->component->traverse();
+
+        $this->assertEquals($this->component1, $iterator->current());
+        $iterator->next();
+        $this->assertEquals($this->component2, $iterator->current());
+        $iterator->next();
+        $this->assertEquals($this->component3, $iterator->current());
+        $iterator->next();
+        $this->assertEquals($this->component4, $iterator->current());
+        $iterator->next();
+        $this->assertEquals($this->component5, $iterator->current());
+    }
+
+    public function testTraverseForTree2()
+    {
+        $this->buildTree2();
+
+        $iterator = $this->component->traverse();
+
+        $this->assertEquals($this->component1, $iterator->current());
+        $iterator->next();
+        $this->assertEquals($this->component3, $iterator->current());
+        $iterator->next();
+        $this->assertEquals($this->component5, $iterator->current());
+        $iterator->next();
+        $this->assertEquals($this->component2, $iterator->current());
+        $iterator->next();
+        $this->assertEquals($this->component4, $iterator->current());
+    }
 }
