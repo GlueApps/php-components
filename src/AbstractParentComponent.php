@@ -120,6 +120,12 @@ abstract class AbstractParentComponent extends AbstractComponent
         return $generator($this->children);
     }
 
+    /**
+     * Does search a component in all the tree by his unique identifier.
+     *
+     * @param  string $uid          The unique identifier
+     * @return ?AbstractComponent
+     */
     public function getComponentByUId(string $uid): ?AbstractComponent
     {
         $result = null;

@@ -263,6 +263,9 @@ class AbstractParentComponentTest extends TestCase
         $this->buildTree1();
 
         $this->assertEquals(
+            $this->component4, $this->component->getComponentByUId($this->component4->getUId())
+        );
+        $this->assertEquals(
             $this->component5, $this->component->getComponentByUId($this->component5->getUId())
         );
     }
