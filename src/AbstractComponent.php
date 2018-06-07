@@ -118,4 +118,22 @@ abstract class AbstractComponent
     {
         $this->dispatcher->dispatch($eventName, $event);
     }
+
+    /**
+     * Returns all the parents until the root.
+     *
+     * @return array
+     */
+    public function parents(): array
+    {
+        $result = [];
+        $parent = $this->parent;
+
+        while ($parent instanceof AbstractParentComponent) {
+            $result[$parent->getUId()] = $parent;
+            $parent = $parent->getParent();
+        }
+
+        return $result;
+    }
 }

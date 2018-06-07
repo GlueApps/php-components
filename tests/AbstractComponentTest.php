@@ -104,4 +104,52 @@ class AbstractComponentTest extends BaseTestCase
         $this->component->setDispatcher($dispatcher);
         $this->component->dispatch($eventName, $event); // Act
     }
+
+    public function testParentsForTree1()
+    {
+        $this->createTree1();
+
+        $parents = $this->component5->parents();
+
+        $expectedKeys = [
+            $this->component4->getUId(),
+            $this->component3->getUId(),
+            $this->component2->getUId(),
+            $this->component1->getUId(),
+            $this->root->getUId(),
+        ];
+
+        $expectedValues = [
+            $this->component4,
+            $this->component3,
+            $this->component2,
+            $this->component1,
+            $this->root,
+        ];
+
+        $this->assertEquals($expectedKeys, array_keys($parents));
+        $this->assertEquals($expectedValues, array_values($parents));
+    }
+
+    public function testParentsForTree2()
+    {
+        $this->createTree2();
+
+        $parents = $this->component5->parents();
+
+        $expectedKeys = [
+            $this->component3->getUId(),
+            $this->component1->getUId(),
+            $this->root->getUId(),
+        ];
+
+        $expectedValues = [
+            $this->component3,
+            $this->component1,
+            $this->root,
+        ];
+
+        $this->assertEquals($expectedKeys, array_keys($parents));
+        $this->assertEquals($expectedValues, array_values($parents));
+    }
 }

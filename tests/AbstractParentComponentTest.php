@@ -183,6 +183,8 @@ class AbstractParentComponentTest extends BaseTestCase
         $this->assertEquals($this->component4, $iterator->current());
         $iterator->next();
         $this->assertEquals($this->component5, $iterator->current());
+        $iterator->next();
+        $this->assertNull($iterator->current());
     }
 
     public function testTraverseForTree2()
@@ -200,6 +202,8 @@ class AbstractParentComponentTest extends BaseTestCase
         $this->assertEquals($this->component2, $iterator->current());
         $iterator->next();
         $this->assertEquals($this->component4, $iterator->current());
+        $iterator->next();
+        $this->assertNull($iterator->current());
     }
 
     public function testGetComponentByUIdDoesSearchTheComponentForAllTheTree()
