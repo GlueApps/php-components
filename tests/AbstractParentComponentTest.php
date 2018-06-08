@@ -3,8 +3,11 @@ declare(strict_types=1);
 
 namespace GlueApps\Components\Tests;
 
+use GlueApps\Components\Events;
 use GlueApps\Components\AbstractComponent;
 use GlueApps\Components\AbstractParentComponent;
+use GlueApps\Components\Event\BeforeInsertionEvent;
+use GlueApps\Components\Event\AfterInsertionEvent;
 
 /**
  * @author Andy Daniel Navarro Taño <andaniel05@gmail.com>

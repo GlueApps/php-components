@@ -3,8 +3,11 @@ declare(strict_types=1);
 
 namespace GlueApps\Components\Tests;
 
+use GlueApps\Components\Events;
 use GlueApps\Components\AbstractComponent;
 use GlueApps\Components\AbstractParentComponent;
+use GlueApps\Components\Event\BeforeInsertionEvent;
+use GlueApps\Components\Event\AfterInsertionEvent;
 use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -184,5 +187,82 @@ class AbstractComponentTest extends BaseTestCase
         $this->component->setDispatcher($dispatcher);
 
         $this->component->on($eventName, $callback); // Act
+    }
+
+    public function testWhenAComponentSetsHisParentOnThisIsTriggeredAnBeforeInsertionEvent()
+    {
+        $parent = $this->createParentComponent();
+        $child = $this->createComponent();
+        $executed = false;
+
+        $parent->on(Events::BEFORE_INSERTION, function (BeforeInsertionEvent $event) use (&$executed, $parent, $child) {
+            $executed = true;
+            $this->assertEquals($parent, $event->getParent());
+            $this->assertEquals($child, $event->getChild());
+            $this->assertFalse($parent->hasChild($child));
+        });
+
+        $child->setParent($parent); // Act
+
+        $this->assertTrue($executed);
+        $this->assertTrue($parent->hasChild($child));
+    }
+
+    public function testAcrossTheBeforeInsertionEventIsPossibleCancelTheInsertion()
+    {
+        $parent = $this->createParentComponent();
+        $child = $this->createComponent();
+        $executed = false;
+
+        $parent->on(Events::BEFORE_INSERTION, function (BeforeInsertionEvent $event) use (&$executed) {
+            $executed = true;
+            $event->cancel();
+        });
+
+        $child->setParent($parent); // Act
+
+        $this->assertTrue($executed);
+        $this->assertFalse($parent->hasChild($child));
+        $this->assertNull($child->getParent());
+    }
+
+    public function testWhenABeforeInsertionEventCancelTheInsertionTheAfterInsertionEventIsNotTriggered()
+    {
+        $parent = $this->createParentComponent();
+        $child = $this->createComponent();
+        $executedBefore = false;
+        $executedAfter = false;
+
+        $parent->on(Events::BEFORE_INSERTION, function (BeforeInsertionEvent $event) use (&$executedBefore) {
+            $executedBefore = true;
+            $event->cancel();
+        });
+
+        $parent->on(Events::AFTER_INSERTION, function (AfterInsertionEvent $event) use (&$executed) {
+            $executedAfter = true;
+        });
+
+        $child->setParent($parent); // Act
+
+        $this->assertTrue($executedBefore);
+        $this->assertFalse($executedAfter);
+    }
+
+    public function testWhenAComponentSetsHisParentOnThisIsTriggeredAnAfterInsertionEvent()
+    {
+        $parent = $this->createParentComponent();
+        $child = $this->createComponent();
+        $executed = false;
+
+        $parent->on(Events::AFTER_INSERTION, function (AfterInsertionEvent $event) use (&$executed, $parent, $child) {
+            $executed = true;
+            $this->assertEquals($parent, $event->getParent());
+            $this->assertEquals($child, $event->getChild());
+            $this->assertTrue($parent->hasChild($child));
+        });
+
+        $child->setParent($parent); // Act
+
+        $this->assertTrue($executed);
     }
 }

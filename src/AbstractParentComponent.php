@@ -35,14 +35,27 @@ abstract class AbstractParentComponent extends AbstractComponent
      * @param AbstractComponent $child  The child to insert.
      * @param bool $assignsParent       When is true this component is registered
      *                                  as parent of the child.
+     * @return bool                     Returns true if insertion is success and false otherwise.
      */
-    public function addChild(AbstractComponent $child, bool $assignsParent = true)
+    public function addChild(AbstractComponent $child, bool $assignsParent = true): bool
     {
+        $beforeInsertionEvent = new Event\BeforeInsertionEvent($this, $child);
+        $this->dispatcher->dispatch(Events::BEFORE_INSERTION, $beforeInsertionEvent);
+
+        if ($beforeInsertionEvent->isCancelled()) {
+            return false;
+        }
+
         $this->children[$child->getUId()] = $child;
+
+        $afterInsertionEvent = new Event\AfterInsertionEvent($this, $child);
+        $this->dispatcher->dispatch(Events::AFTER_INSERTION, $afterInsertionEvent);
 
         if ($assignsParent) {
             $child->setParent($this, false);
         }
+
+        return true;
     }
 
     /**
