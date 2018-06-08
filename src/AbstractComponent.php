@@ -150,4 +150,15 @@ abstract class AbstractComponent
 
         return empty($parents) ? null : array_pop($parents);
     }
+
+    /**
+     * Registers a listener for an event.
+     *
+     * @param  string   $eventName
+     * @param  callable $listener
+     */
+    public function on(string $eventName, callable $listener)
+    {
+        $this->dispatcher->addListener($eventName, $listener);
+    }
 }

@@ -165,4 +165,24 @@ class AbstractComponentTest extends BaseTestCase
         $this->assertEquals($this->root, $this->component5->getRoot());
         $this->assertEquals($this->root, $this->component1->getRoot());
     }
+
+    public function testOnRegistersListenersInTheDispatcher()
+    {
+        $eventName = uniqid('eventName');
+        $callback = function () {};
+
+        $dispatcher = $this->getMockBuilder(EventDispatcherInterface::class)
+            ->setMethods(['addListener'])
+            ->getMockForAbstractClass();
+        $dispatcher->expects($this->once())
+            ->method('addListener')
+            ->with(
+                $this->equalTo($eventName),
+                $this->equalTo($callback)
+            );
+
+        $this->component->setDispatcher($dispatcher);
+
+        $this->component->on($eventName, $callback); // Act
+    }
 }
