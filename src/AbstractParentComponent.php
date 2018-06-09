@@ -33,9 +33,10 @@ abstract class AbstractParentComponent extends AbstractComponent
      * cancelled if second argument is specified as false.
      *
      * @param AbstractComponent $child  The child to insert.
-     * @param bool $assignsParent       When is true this component is registered
+     * @param boolean $assignsParent    When is true this component is registered
      *                                  as parent of the child.
-     * @return bool                     Returns true if insertion is success and false otherwise.
+     *
+     * @return boolean                  Returns true if insertion is success and false otherwise.
      */
     public function addChild(AbstractComponent $child, bool $assignsParent = true): bool
     {

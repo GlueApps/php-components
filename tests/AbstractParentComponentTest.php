@@ -226,4 +226,81 @@ class AbstractParentComponentTest extends BaseTestCase
         $uid = uniqid();
         $this->assertNull($this->component->getComponentByUId($uid));
     }
+
+    public function testWhenAddsAChildIsTriggeredAnBeforeInsertionEvent()
+    {
+        $parent = $this->createParentComponent();
+        $child = $this->createComponent();
+        $executed = false;
+
+        $parent->on(Events::BEFORE_INSERTION, function (BeforeInsertionEvent $event) use (&$executed, $parent, $child) {
+            $executed = true;
+            $this->assertEquals($parent, $event->getParent());
+            $this->assertEquals($child, $event->getChild());
+            $this->assertFalse($parent->hasChild($child));
+        });
+
+        $parent->addChild($child); // Act
+
+        $this->assertTrue($executed);
+        $this->assertTrue($parent->hasChild($child));
+    }
+
+    public function testAcrossTheBeforeInsertionEventIsPossibleCancelTheInsertion()
+    {
+        $parent = $this->createParentComponent();
+        $child = $this->createComponent();
+        $executed = false;
+
+        $parent->on(Events::BEFORE_INSERTION, function (BeforeInsertionEvent $event) use (&$executed) {
+            $executed = true;
+            $event->cancel();
+        });
+
+        $parent->addChild($child); // Act
+
+        $this->assertTrue($executed);
+        $this->assertFalse($parent->hasChild($child));
+        $this->assertNull($child->getParent());
+    }
+
+    public function testWhenABeforeInsertionEventCancelTheInsertionTheAfterInsertionEventIsNotTriggered()
+    {
+        $parent = $this->createParentComponent();
+        $child = $this->createComponent();
+        $executedBefore = false;
+        $executedAfter = false;
+
+        $parent->on(Events::BEFORE_INSERTION, function (BeforeInsertionEvent $event) use (&$executedBefore) {
+            $executedBefore = true;
+            $event->cancel();
+        });
+
+        $parent->on(Events::AFTER_INSERTION, function (AfterInsertionEvent $event) use (&$executed) {
+            $executedAfter = true;
+        });
+
+        $parent->addChild($child); // Act
+
+        $this->assertTrue($executedBefore);
+        $this->assertFalse($executedAfter);
+    }
+
+    public function testWhenAddsAChildIsTriggeredAnAfterInsertionEvent()
+    {
+        $parent = $this->createParentComponent();
+        $child = $this->createComponent();
+        $executed = false;
+
+        $parent->on(Events::AFTER_INSERTION, function (AfterInsertionEvent $event) use (&$executed, $parent, $child) {
+            $executed = true;
+            $this->assertEquals($parent, $event->getParent());
+            $this->assertEquals($child, $event->getChild());
+            $this->assertTrue($parent->hasChild($child));
+        });
+
+        $parent->addChild($child); // Act
+
+        $this->assertTrue($executed);
+    }
 }
