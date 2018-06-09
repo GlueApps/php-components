@@ -81,7 +81,11 @@ abstract class AbstractComponent
      */
     public function setParent(?AbstractParentComponent $parent, bool $registersChild = true)
     {
-        if ($registersChild) {
+        if ($parent === null && $this->parent instanceof AbstractParentComponent) {
+            $this->parent->dropChild($this);
+        }
+
+        if ($registersChild && $parent) {
             if ($parent->addChild($this, false)) {
                 $this->parent = $parent;
             }

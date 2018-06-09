@@ -111,6 +111,31 @@ class AbstractComponentTest extends BaseTestCase
         $this->assertNull($this->component->getParent());
     }
 
+    public function testWhenSetsParentAsNullIsInvokedDropChildInTheOld()
+    {
+        $parent = $this->getMockBuilder(AbstractParentComponent::class)
+            ->setMethods(['dropChild'])
+            ->getMockForAbstractClass();
+        $parent->expects($this->once())
+            ->method('dropChild')
+            ->with(
+                $this->equalTo($this->component)
+            );
+        $parent->addChild($this->component);
+
+        $this->component->setParent(null); // Act
+    }
+
+    public function testWhenSetsParentAsNullTheOldParentRemovesTheChild()
+    {
+        $parent = $this->createParentComponent();
+        $parent->addChild($this->component);
+
+        $this->component->setParent(null); // Act
+
+        $this->assertFalse($parent->hasChild($this->component));
+    }
+
     public function testGetDispatcherReturnsTheSymfonyEventDispatcher()
     {
         $this->assertInstanceOf(EventDispatcher::class, $this->component->getDispatcher());
