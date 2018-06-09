@@ -102,6 +102,12 @@ abstract class AbstractParentComponent extends AbstractComponent
             return false;
         }
 
+        $beforeDeletionEvent = new Event\BeforeDeletionEvent($this, $child);
+        $this->dispatcher->dispatch(Events::BEFORE_DELETION, $beforeDeletionEvent);
+        if ($beforeDeletionEvent->isCancelled()) {
+            return false;
+        }
+
         unset($this->children[$child->getUId()]);
 
         $afterDeletionEvent = new Event\AfterDeletionEvent($this, $child);

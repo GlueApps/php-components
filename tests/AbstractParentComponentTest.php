@@ -129,11 +129,19 @@ class AbstractParentComponentTest extends BaseTestCase
         $this->assertNull($this->component->getChild($uid));
     }
 
+    public function testDropChildReturnsTrueOnSuccess()
+    {
+        $this->addThreeChilds();
+
+        $this->assertTrue($this->component->dropChild($this->child1));
+        $this->assertTrue($this->component->dropChild($this->child2->getUId()));
+    }
+
     public function testDropChildUsingTheChildUId()
     {
         $this->addThreeChilds();
 
-        $result = $this->component->dropChild($this->child2->getUId()); // Act
+        $this->component->dropChild($this->child2->getUId()); // Act
 
         $expected = [
             $this->child1->getUId() => $this->child1,
@@ -141,14 +149,13 @@ class AbstractParentComponentTest extends BaseTestCase
         ];
 
         $this->assertEquals($expected, $this->component->children());
-        $this->assertTrue($result);
     }
 
     public function testDropChildUsingTheChildObject()
     {
         $this->addThreeChilds();
 
-        $result = $this->component->dropChild($this->child2); // Act
+        $this->component->dropChild($this->child2); // Act
 
         $expected = [
             $this->child1->getUId() => $this->child1,
@@ -156,7 +163,6 @@ class AbstractParentComponentTest extends BaseTestCase
         ];
 
         $this->assertEquals($expected, $this->component->children());
-        $this->assertTrue($result);
     }
 
     public function testDropChildReturnsFalseWhenTheChildNotFound()
@@ -302,7 +308,7 @@ class AbstractParentComponentTest extends BaseTestCase
             $event->cancel();
         });
 
-        $parent->on(Events::AFTER_INSERTION, function (AfterInsertionEvent $event) use (&$executed) {
+        $parent->on(Events::AFTER_INSERTION, function (AfterInsertionEvent $event) use (&$executedAfter) {
             $executedAfter = true;
         });
 
@@ -328,6 +334,86 @@ class AbstractParentComponentTest extends BaseTestCase
         $parent->addChild($child); // Act
 
         $this->assertTrue($executed);
+    }
+
+    public function testDropChildTriggersAnBeforeDeletionEvent1()
+    {
+        $parent = $this->createParentComponent();
+        $child = $this->createComponent();
+        $executed = false;
+
+        $parent->addChild($child);
+        $parent->on(Events::BEFORE_DELETION, function (BeforeDeletionEvent $event) use (&$executed, $parent, $child) {
+            $executed = true;
+            $this->assertEquals($parent, $event->getParent());
+            $this->assertEquals($child, $event->getChild());
+            $this->assertTrue($parent->hasChild($child));
+        });
+
+        $parent->dropChild($child); // Act
+
+        $this->assertTrue($executed);
+    }
+
+    public function testDropChildTriggersAnBeforeDeletionEvent2()
+    {
+        $parent = $this->createParentComponent();
+        $child = $this->createComponent();
+        $executed = false;
+
+        $parent->addChild($child);
+        $parent->on(Events::BEFORE_DELETION, function (BeforeDeletionEvent $event) use (&$executed, $parent, $child) {
+            $executed = true;
+            $this->assertEquals($parent, $event->getParent());
+            $this->assertEquals($child, $event->getChild());
+            $this->assertTrue($parent->hasChild($child));
+        });
+
+        $child->setParent(null); // Act
+
+        $this->assertTrue($executed);
+    }
+
+    public function testAcrossTheBeforeDeletionEventIsPossibleCancelTheDeletion()
+    {
+        $parent = $this->createParentComponent();
+        $child = $this->createComponent();
+        $executed = false;
+
+        $parent->addChild($child);
+        $parent->on(Events::BEFORE_DELETION, function (BeforeDeletionEvent $event) use (&$executed) {
+            $executed = true;
+            $event->cancel();
+        });
+
+        $child->setParent(null); // Act
+
+        $this->assertTrue($executed);
+        $this->assertTrue($parent->hasChild($child));
+    }
+
+    public function testWhenABeforeDeletionEventCancelTheDeletionTheAfterDeletionEventIsNotTriggered()
+    {
+        $parent = $this->createParentComponent();
+        $child = $this->createComponent();
+        $executedBefore = false;
+        $executedAfter = false;
+
+        $parent->addChild($child);
+
+        $parent->on(Events::BEFORE_DELETION, function (BeforeDeletionEvent $event) use (&$executedBefore) {
+            $executedBefore = true;
+            $event->cancel();
+        });
+
+        $parent->on(Events::AFTER_DELETION, function (AfterDeletionEvent $event) use (&$executedAfter) {
+            $executedAfter = true;
+        });
+
+        $parent->dropChild($child); // Act
+
+        $this->assertTrue($executedBefore);
+        $this->assertFalse($executedAfter);
     }
 
     public function testDropChildTriggersAnAfterDeletionEvent1()
