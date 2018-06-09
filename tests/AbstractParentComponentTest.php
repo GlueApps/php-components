@@ -361,4 +361,29 @@ class AbstractParentComponentTest extends BaseTestCase
 
         $this->assertTrue($executed);
     }
+
+    public function testDropChildNotTriggersAnAfterDeletionEventIfTheChildNotFound1()
+    {
+        $executed = false;
+        $child = $this->createMock(AbstractComponent::class);
+        $this->component->on(Events::AFTER_DELETION, function (AfterDeletionEvent $event) use (&$executed) {
+            $executed = true;
+        });
+
+        $this->component->dropChild($child); // Act
+
+        $this->assertFalse($executed);
+    }
+
+    public function testDropChildNotTriggersAnAfterDeletionEventIfTheChildNotFound2()
+    {
+        $executed = false;
+        $this->component->on(Events::AFTER_DELETION, function (AfterDeletionEvent $event) use (&$executed) {
+            $executed = true;
+        });
+
+        $this->component->dropChild(uniqid('child')); // Act
+
+        $this->assertFalse($executed);
+    }
 }
