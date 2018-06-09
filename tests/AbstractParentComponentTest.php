@@ -448,6 +448,17 @@ class AbstractParentComponentTest extends BaseTestCase
         $this->assertTrue($executed);
     }
 
+    public function testDropChildReturnsFalseIfTheBeforeDeletionEventIsCancelled()
+    {
+        $this->addThreeChilds();
+
+        $this->component->on(Events::BEFORE_DELETION, function (BeforeDeletionEvent $event) {
+            $event->cancel();
+        });
+
+        $this->assertFalse($this->component->dropChild($this->child1));
+    }
+
     public function testDropChildNotTriggersAnAfterDeletionEventIfTheChildNotFound1()
     {
         $executed = false;
