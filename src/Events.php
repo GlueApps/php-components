@@ -8,9 +8,13 @@ namespace GlueApps\Components;
  */
 final class Events
 {
+    public const BEFORE_INSERTION = 'tree.before_insertion';
+
     public const AFTER_INSERTION = 'tree.after_insertion';
 
-    public const BEFORE_INSERTION = 'tree.before_insertion';
+    public const BEFORE_DELETION = 'tree.before_deletion';
+
+    public const AFTER_DELETION = 'tree.after_deletion';
 
     /**
      * This class will not have instances.

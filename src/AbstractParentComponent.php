@@ -85,13 +85,29 @@ abstract class AbstractParentComponent extends AbstractComponent
     }
 
     /**
-     * Removes a child by his unique identifier.
+     * Removes a child.
      *
-     * @param  string $uid Unique identifier
+     * @param AbstractComponent|string  $child Indicates the child instance or his unique identifier.
+     * @return boolean                  Return true if deletion is success.
      */
-    public function dropChild(string $uid)
+    public function dropChild($child): bool
     {
-        unset($this->children[$uid]);
+        if (is_string($child)) {
+            $child = $this->children[$child] ?? null;
+        }
+
+        if (! $child instanceof AbstractComponent ||
+            ! array_search($child, $this->children))
+        {
+            return false;
+        }
+
+        unset($this->children[$child->getUId()]);
+
+        $afterDeletionEvent = new Event\AfterDeletionEvent($this, $child);
+        $this->dispatcher->dispatch(Events::AFTER_DELETION, $afterDeletionEvent);
+
+        return true;
     }
 
     /**

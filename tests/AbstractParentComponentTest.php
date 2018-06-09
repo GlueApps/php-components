@@ -8,6 +8,8 @@ use GlueApps\Components\AbstractComponent;
 use GlueApps\Components\AbstractParentComponent;
 use GlueApps\Components\Event\BeforeInsertionEvent;
 use GlueApps\Components\Event\AfterInsertionEvent;
+use GlueApps\Components\Event\BeforeDeletionEvent;
+use GlueApps\Components\Event\AfterDeletionEvent;
 
 /**
  * @author Andy Daniel Navarro Taño <andaniel05@gmail.com>
@@ -127,11 +129,11 @@ class AbstractParentComponentTest extends BaseTestCase
         $this->assertNull($this->component->getChild($uid));
     }
 
-    public function testDropChild()
+    public function testDropChildUsingTheChildUId()
     {
         $this->addThreeChilds();
 
-        $this->component->dropChild($this->child2->getUId());
+        $result = $this->component->dropChild($this->child2->getUId()); // Act
 
         $expected = [
             $this->child1->getUId() => $this->child1,
@@ -139,6 +141,30 @@ class AbstractParentComponentTest extends BaseTestCase
         ];
 
         $this->assertEquals($expected, $this->component->children());
+        $this->assertTrue($result);
+    }
+
+    public function testDropChildUsingTheChildObject()
+    {
+        $this->addThreeChilds();
+
+        $result = $this->component->dropChild($this->child2); // Act
+
+        $expected = [
+            $this->child1->getUId() => $this->child1,
+            $this->child3->getUId() => $this->child3,
+        ];
+
+        $this->assertEquals($expected, $this->component->children());
+        $this->assertTrue($result);
+    }
+
+    public function testDropChildReturnsFalseWhenTheChildNotFound()
+    {
+        $child = $this->createMock(AbstractComponent::class);
+
+        $this->assertFalse($this->component->dropChild(uniqid('child')));
+        $this->assertFalse($this->component->dropChild($child));
     }
 
     public function testHasChildReturnsTrueWhenExistsOneChildWithTheSearchedUId()
@@ -300,6 +326,38 @@ class AbstractParentComponentTest extends BaseTestCase
         });
 
         $parent->addChild($child); // Act
+
+        $this->assertTrue($executed);
+    }
+
+    public function testDropChildTriggersAnAfterDeletionEvent1()
+    {
+        $this->addThreeChilds();
+        $executed = false;
+
+        $this->component->on(Events::AFTER_DELETION, function (AfterDeletionEvent $event) use (&$executed) {
+            $executed = true;
+            $this->assertEquals($this->component, $event->getParent());
+            $this->assertEquals($this->child1, $event->getChild());
+        });
+
+        $this->component->dropChild($this->child1); // Act
+
+        $this->assertTrue($executed);
+    }
+
+    public function testDropChildTriggersAnAfterDeletionEvent2()
+    {
+        $this->addThreeChilds();
+        $executed = false;
+
+        $this->component->on(Events::AFTER_DELETION, function (AfterDeletionEvent $event) use (&$executed) {
+            $executed = true;
+            $this->assertEquals($this->component, $event->getParent());
+            $this->assertEquals($this->child1, $event->getChild());
+        });
+
+        $this->component->dropChild($this->child1->getUId()); // Act
 
         $this->assertTrue($executed);
     }
