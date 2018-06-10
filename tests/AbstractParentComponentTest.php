@@ -489,4 +489,43 @@ class AbstractParentComponentTest extends BaseTestCase
 
         $this->assertFalse($executed);
     }
+
+    public function test1()
+    {
+        $this->createTree2();
+        $this->executed3 = false;
+        $this->executed1 = false;
+        $this->executedRoot = false;
+
+        $this->component3->on(Events::AFTER_DELETION, function (AfterDeletionEvent $event) {
+            $this->assertEquals($this->component3, $event->getSource());
+            $this->assertEquals($this->component3, $event->getParent());
+            $this->assertEquals($this->component5, $event->getChild());
+            $this->executed3 = true;
+            $event->last = 3;
+        });
+
+        $this->component1->on(Events::AFTER_DELETION, function (AfterDeletionEvent $event) {
+            $this->assertEquals(3, $event->last);
+            $this->assertEquals($this->component3, $event->getSource());
+            $this->assertEquals($this->component3, $event->getParent());
+            $this->assertEquals($this->component5, $event->getChild());
+            $this->executed1 = true;
+            $event->last = 1;
+        });
+
+        $this->root->on(Events::AFTER_DELETION, function (AfterDeletionEvent $event) {
+            $this->assertEquals(1, $event->last);
+            $this->assertEquals($this->component3, $event->getSource());
+            $this->assertEquals($this->component3, $event->getParent());
+            $this->assertEquals($this->component5, $event->getChild());
+            $this->executedRoot = true;
+        });
+
+        $this->component3->dropChild($this->component5); // Act
+
+        $this->assertTrue($this->executed3);
+        $this->assertTrue($this->executed1);
+        $this->assertTrue($this->executedRoot);
+    }
 }

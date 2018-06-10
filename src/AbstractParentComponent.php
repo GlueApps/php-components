@@ -113,6 +113,10 @@ abstract class AbstractParentComponent extends AbstractComponent
         $afterDeletionEvent = new Event\AfterDeletionEvent($this, $this, $child);
         $this->dispatcher->dispatch(Events::AFTER_DELETION, $afterDeletionEvent);
 
+        foreach ($child->parents() as $parent) {
+            $parent->getDispatcher()->dispatch(Events::AFTER_DELETION, $afterDeletionEvent);
+        }
+
         return true;
     }
 

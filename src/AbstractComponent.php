@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace GlueApps\Components;
 
-use Symfony\Component\EventDispatcher\Event;
+use GlueApps\Components\Event\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -117,10 +117,10 @@ abstract class AbstractComponent
     /**
      * Dispatchs an event on this component.
      *
-     * @param  string     $eventName
-     * @param  Event|null $event
+     * @param  string   $eventName
+     * @param  ?Event   $event
      */
-    public function dispatch(string $eventName, Event $event = null)
+    public function dispatch(string $eventName, ?Event $event = null)
     {
         $this->dispatcher->dispatch($eventName, $event);
     }

@@ -6,9 +6,7 @@ namespace GlueApps\Components\Tests;
 use GlueApps\Components\Events;
 use GlueApps\Components\AbstractComponent;
 use GlueApps\Components\AbstractParentComponent;
-use GlueApps\Components\Event\BeforeInsertionEvent;
-use GlueApps\Components\Event\AfterInsertionEvent;
-use Symfony\Component\EventDispatcher\Event;
+use GlueApps\Components\Event\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
