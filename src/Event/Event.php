@@ -11,15 +11,15 @@ use Symfony\Component\EventDispatcher\Event as SymfonyEvent;
  */
 class Event extends SymfonyEvent
 {
-    protected $target;
+    protected $source;
 
-    public function __construct(AbstractComponent $target)
+    public function __construct(AbstractComponent $source)
     {
-        $this->target = $target;
+        $this->source = $source;
     }
 
-    public function getTarget(): AbstractComponent
+    public function getSource(): AbstractComponent
     {
-        return $this->target;
+        return $this->source;
     }
 }
