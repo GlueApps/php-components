@@ -6,7 +6,7 @@ namespace GlueApps\Components\Event;
 /**
  * @author Andy Daniel Navarro Taño <andaniel05@gmail.com>
  */
-trait CancellableTreeEventTrait
+trait CancellableEventTrait
 {
     protected $cancelled = false;
 

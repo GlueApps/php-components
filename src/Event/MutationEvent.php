@@ -9,7 +9,7 @@ use GlueApps\Components\AbstractParentComponent;
 /**
  * @author Andy Daniel Navarro Taño <andaniel05@gmail.com>
  */
-class MutationTreeEvent extends TreeEvent
+class MutationEvent extends Event
 {
     protected $parent;
 
