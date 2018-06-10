@@ -40,7 +40,7 @@ abstract class AbstractParentComponent extends AbstractComponent
      */
     public function addChild(AbstractComponent $child, bool $assignsParent = true): bool
     {
-        $beforeInsertionEvent = new Event\BeforeInsertionEvent($this, $child);
+        $beforeInsertionEvent = new Event\BeforeInsertionEvent($this, $this, $child);
         $this->dispatcher->dispatch(Events::BEFORE_INSERTION, $beforeInsertionEvent);
 
         if ($beforeInsertionEvent->isCancelled()) {
@@ -49,7 +49,7 @@ abstract class AbstractParentComponent extends AbstractComponent
 
         $this->children[$child->getUId()] = $child;
 
-        $afterInsertionEvent = new Event\AfterInsertionEvent($this, $child);
+        $afterInsertionEvent = new Event\AfterInsertionEvent($this, $this, $child);
         $this->dispatcher->dispatch(Events::AFTER_INSERTION, $afterInsertionEvent);
 
         if ($assignsParent) {
@@ -102,7 +102,7 @@ abstract class AbstractParentComponent extends AbstractComponent
             return false;
         }
 
-        $beforeDeletionEvent = new Event\BeforeDeletionEvent($this, $child);
+        $beforeDeletionEvent = new Event\BeforeDeletionEvent($this, $this, $child);
         $this->dispatcher->dispatch(Events::BEFORE_DELETION, $beforeDeletionEvent);
         if ($beforeDeletionEvent->isCancelled()) {
             return false;
@@ -110,7 +110,7 @@ abstract class AbstractParentComponent extends AbstractComponent
 
         unset($this->children[$child->getUId()]);
 
-        $afterDeletionEvent = new Event\AfterDeletionEvent($this, $child);
+        $afterDeletionEvent = new Event\AfterDeletionEvent($this, $this, $child);
         $this->dispatcher->dispatch(Events::AFTER_DELETION, $afterDeletionEvent);
 
         return true;

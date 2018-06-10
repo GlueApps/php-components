@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace GlueApps\Components\Event;
 
 use GlueApps\Components\AbstractComponent;
-use GlueApps\Components\AbstractParentComponent;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
@@ -12,23 +11,15 @@ use Symfony\Component\EventDispatcher\Event;
  */
 class TreeEvent extends Event
 {
-    protected $parent;
+    protected $target;
 
-    protected $child;
-
-    public function __construct(AbstractParentComponent $parent, AbstractComponent $child)
+    public function __construct(AbstractComponent $target)
     {
-        $this->parent = $parent;
-        $this->child = $child;
+        $this->target = $target;
     }
 
-    public function getParent(): AbstractParentComponent
+    public function getTarget(): AbstractComponent
     {
-        return $this->parent;
-    }
-
-    public function getChild(): AbstractComponent
-    {
-        return $this->child;
+        return $this->target;
     }
 }

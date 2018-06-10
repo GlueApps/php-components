@@ -267,6 +267,7 @@ class AbstractParentComponentTest extends BaseTestCase
 
         $parent->on(Events::BEFORE_INSERTION, function (BeforeInsertionEvent $event) use (&$executed, $parent, $child) {
             $executed = true;
+            $this->assertEquals($parent, $event->getTarget());
             $this->assertEquals($parent, $event->getParent());
             $this->assertEquals($child, $event->getChild());
             $this->assertFalse($parent->hasChild($child));
@@ -326,6 +327,7 @@ class AbstractParentComponentTest extends BaseTestCase
 
         $parent->on(Events::AFTER_INSERTION, function (AfterInsertionEvent $event) use (&$executed, $parent, $child) {
             $executed = true;
+            $this->assertEquals($parent, $event->getTarget());
             $this->assertEquals($parent, $event->getParent());
             $this->assertEquals($child, $event->getChild());
             $this->assertTrue($parent->hasChild($child));
@@ -345,6 +347,7 @@ class AbstractParentComponentTest extends BaseTestCase
         $parent->addChild($child);
         $parent->on(Events::BEFORE_DELETION, function (BeforeDeletionEvent $event) use (&$executed, $parent, $child) {
             $executed = true;
+            $this->assertEquals($parent, $event->getTarget());
             $this->assertEquals($parent, $event->getParent());
             $this->assertEquals($child, $event->getChild());
             $this->assertTrue($parent->hasChild($child));
@@ -364,6 +367,7 @@ class AbstractParentComponentTest extends BaseTestCase
         $parent->addChild($child);
         $parent->on(Events::BEFORE_DELETION, function (BeforeDeletionEvent $event) use (&$executed, $parent, $child) {
             $executed = true;
+            $this->assertEquals($parent, $event->getTarget());
             $this->assertEquals($parent, $event->getParent());
             $this->assertEquals($child, $event->getChild());
             $this->assertTrue($parent->hasChild($child));
@@ -423,6 +427,7 @@ class AbstractParentComponentTest extends BaseTestCase
 
         $this->component->on(Events::AFTER_DELETION, function (AfterDeletionEvent $event) use (&$executed) {
             $executed = true;
+            $this->assertEquals($this->component, $event->getTarget());
             $this->assertEquals($this->component, $event->getParent());
             $this->assertEquals($this->child1, $event->getChild());
         });
@@ -439,6 +444,7 @@ class AbstractParentComponentTest extends BaseTestCase
 
         $this->component->on(Events::AFTER_DELETION, function (AfterDeletionEvent $event) use (&$executed) {
             $executed = true;
+            $this->assertEquals($this->component, $event->getTarget());
             $this->assertEquals($this->component, $event->getParent());
             $this->assertEquals($this->child1, $event->getChild());
         });
