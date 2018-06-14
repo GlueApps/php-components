@@ -4,18 +4,17 @@ declare(strict_types=1);
 namespace GlueApps\Components\Event;
 
 use GlueApps\Components\AbstractComponent;
-use GlueApps\Components\AbstractParentComponent;
 
 /**
  * @author Andy Daniel Navarro Taño <andaniel05@gmail.com>
  */
-class TreeMutationEvent extends Event
+class TreeMutationEvent extends TreeEvent
 {
     protected $parent;
 
     protected $child;
 
-    public function __construct(AbstractComponent $target, AbstractParentComponent $parent, AbstractComponent $child)
+    public function __construct(AbstractComponent $target, AbstractComponent $parent, AbstractComponent $child)
     {
         parent::__construct($target);
 
@@ -23,7 +22,7 @@ class TreeMutationEvent extends Event
         $this->child = $child;
     }
 
-    public function getParent(): AbstractParentComponent
+    public function getParent(): AbstractComponent
     {
         return $this->parent;
     }

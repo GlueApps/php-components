@@ -4,12 +4,12 @@ declare(strict_types=1);
 namespace GlueApps\Components\Event;
 
 use GlueApps\Components\AbstractComponent;
-use Symfony\Component\EventDispatcher\Event as SymfonyEvent;
+use Symfony\Component\EventDispatcher\Event;
 
 /**
  * @author Andy Daniel Navarro Taño <andaniel05@gmail.com>
  */
-class Event extends SymfonyEvent
+class TreeEvent extends Event
 {
     protected $source;
 

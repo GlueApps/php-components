@@ -5,30 +5,29 @@ namespace GlueApps\Components\Tests;
 
 use PHPUnit\Framework\TestCase;
 use GlueApps\Components\AbstractComponent;
-use GlueApps\Components\AbstractParentComponent;
 
 /**
  * @author Andy Daniel Navarro Taño <andaniel05@gmail.com>
  */
 class BaseTestCase extends TestCase
 {
+    public function setUp()
+    {
+        $this->component = $this->createComponent();
+    }
+
     public function createComponent()
     {
         return $this->getMockForAbstractClass(AbstractComponent::class);
     }
 
-    public function createParentComponent()
-    {
-        return $this->getMockForAbstractClass(AbstractParentComponent::class);
-    }
-
     public function createTreeComponents()
     {
-        $this->root = $this->createParentComponent();
-        $this->component1 = $this->createParentComponent();
-        $this->component2 = $this->createParentComponent();
-        $this->component3 = $this->createParentComponent();
-        $this->component4 = $this->createParentComponent();
+        $this->root = $this->createComponent();
+        $this->component1 = $this->createComponent();
+        $this->component2 = $this->createComponent();
+        $this->component3 = $this->createComponent();
+        $this->component4 = $this->createComponent();
         $this->component5 = $this->createComponent();
     }
 
