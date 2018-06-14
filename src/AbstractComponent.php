@@ -20,7 +20,7 @@ abstract class AbstractComponent
      *
      * @var string
      */
-    private $uid;
+    protected $uid;
 
     /**
      * @var ?AbstractComponent
@@ -37,6 +37,8 @@ abstract class AbstractComponent
      */
     public function __construct()
     {
+        $this->generateUId();
+
         $this->dispatcher = new EventDispatcher;
     }
 
@@ -47,16 +49,27 @@ abstract class AbstractComponent
      */
     public function getUId(): string
     {
-        if (null === $this->uid) {
-            $reflection = new \ReflectionClass(static::class);
-            if ($reflection->isAnonymous()) {
-                $this->uid = uniqid('anonymous');
-            } else {
-                $this->uid = uniqid(strtolower(basename(static::class)));
-            }
-        }
-
         return $this->uid;
+    }
+
+    /**
+     * Sets the unique identifier.
+     *
+     * @param string $uid
+     */
+    public function setUId(string $uid)
+    {
+        $this->uid = $uid;
+    }
+
+    /**
+     * Creates a unique identifier for the component.
+     *
+     * This method should be override to define a custom generation method.
+     */
+    protected function generateUId(): void
+    {
+        $this->uid = uniqid();
     }
 
     /**

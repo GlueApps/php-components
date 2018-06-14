@@ -20,25 +20,42 @@ class AbstractComponentTest extends BaseTestCase
         $this->component = $this->createComponent();
     }
 
-    public function testTheUniqueIdentifierEndsWithARandomWord()
+    public function testTheUniqueIdentifierIsARandomWord()
     {
         $component = new MyDummyComponent;
 
         $this->assertRegExp('/\w{13}$/', $component->getUId());
     }
 
-    public function testTheUniqueIdentifierStartsWithTheClassNameInLowerCase()
+    public function testSetUIdSetsTheUniqueIdentifier()
     {
-        $component = new MyDummyComponent;
+        $uid = uniqid();
 
-        $this->assertStringStartsWith('mydummycomponent', $component->getUId());
+        $this->component->setUId($uid);
+
+        $this->assertEquals($uid, $this->component->getUId());
     }
 
-    public function testTheUniqueIdentifierStartsWithAnonymouseWhenTheClassIsAnonymous()
+    public function testGenerateUIdDefinesTheGenerationMethodOfTheUniqueIdentifier()
     {
-        $component = new class extends AbstractComponent {};
+        $uid = uniqid();
 
-        $this->assertStringStartsWith('anonymous', $component->getUId());
+        $component = new class($uid) extends AbstractComponent {
+
+            public function __construct($newUId)
+            {
+                $this->newUId = $newUId;
+
+                parent::__construct(); // Act
+            }
+
+            protected function generateUId(): void
+            {
+                $this->uid = $this->newUId;
+            }
+        };
+
+        $this->assertEquals($uid, $component->getUId());
     }
 
     public function testByDefaultTheParentIsNull()
