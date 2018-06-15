@@ -4,10 +4,6 @@ declare(strict_types=1);
 namespace GlueApps\Components;
 
 use GlueApps\Components\Event\TreeEvent;
-use GlueApps\Components\Event\BeforeInsertionEvent;
-use GlueApps\Components\Event\AfterInsertionEvent;
-use GlueApps\Components\Event\BeforeDeletionEvent;
-use GlueApps\Components\Event\AfterDeletionEvent;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -19,6 +15,14 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 abstract class AbstractComponent
 {
+    public const EVENT_BEFORE_INSERTION = 'tree.before_insertion';
+
+    public const EVENT_AFTER_INSERTION = 'tree.after_insertion';
+
+    public const EVENT_BEFORE_DELETION = 'tree.before_deletion';
+
+    public const EVENT_AFTER_DELETION = 'tree.after_deletion';
+
     /**
      * Unique identifier.
      *
@@ -215,7 +219,7 @@ abstract class AbstractComponent
     public function addChild(AbstractComponent $child, bool $assignsParent = true): bool
     {
         $beforeInsertionEvent = new Event\BeforeInsertionEvent($this, $this, $child);
-        $this->dispatcher->dispatch(Events::BEFORE_INSERTION, $beforeInsertionEvent);
+        $this->dispatcher->dispatch(self::EVENT_BEFORE_INSERTION, $beforeInsertionEvent);
 
         if ($beforeInsertionEvent->isCancelled()) {
             return false;
@@ -224,7 +228,7 @@ abstract class AbstractComponent
         $this->children[$child->getUId()] = $child;
 
         $afterInsertionEvent = new Event\AfterInsertionEvent($this, $this, $child);
-        $this->dispatcher->dispatch(Events::AFTER_INSERTION, $afterInsertionEvent);
+        $this->dispatcher->dispatch(self::EVENT_AFTER_INSERTION, $afterInsertionEvent);
 
         if ($assignsParent) {
             $child->setParent($this, false);
@@ -271,13 +275,12 @@ abstract class AbstractComponent
         }
 
         if (! $child instanceof AbstractComponent ||
-            ! array_search($child, $this->children))
-        {
+            ! array_search($child, $this->children)) {
             return false;
         }
 
         $beforeDeletionEvent = new Event\BeforeDeletionEvent($this, $this, $child);
-        $this->dispatcher->dispatch(Events::BEFORE_DELETION, $beforeDeletionEvent);
+        $this->dispatcher->dispatch(self::EVENT_BEFORE_DELETION, $beforeDeletionEvent);
         if ($beforeDeletionEvent->isCancelled()) {
             return false;
         }
@@ -285,10 +288,10 @@ abstract class AbstractComponent
         unset($this->children[$child->getUId()]);
 
         $afterDeletionEvent = new Event\AfterDeletionEvent($this, $this, $child);
-        $this->dispatcher->dispatch(Events::AFTER_DELETION, $afterDeletionEvent);
+        $this->dispatcher->dispatch(self::EVENT_AFTER_DELETION, $afterDeletionEvent);
 
         foreach ($child->parents() as $parent) {
-            $parent->getDispatcher()->dispatch(Events::AFTER_DELETION, $afterDeletionEvent);
+            $parent->getDispatcher()->dispatch(self::EVENT_AFTER_DELETION, $afterDeletionEvent);
         }
 
         return true;

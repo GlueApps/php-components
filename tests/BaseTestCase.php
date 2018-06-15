@@ -21,6 +21,17 @@ class BaseTestCase extends TestCase
         return $this->getMockForAbstractClass(AbstractComponent::class);
     }
 
+    public function addThreeChilds()
+    {
+        $this->child1 = $this->createComponent();
+        $this->child2 = $this->createComponent();
+        $this->child3 = $this->createComponent();
+
+        $this->component->addChild($this->child1);
+        $this->component->addChild($this->child2);
+        $this->component->addChild($this->child3);
+    }
+
     public function createTreeComponents()
     {
         $this->root = $this->createComponent();

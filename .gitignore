@@ -1,2 +1,6 @@
 vendor/
 tmp/
+.*
+!.gitignore
+!.editorconfig
+!.php_cs.dist
