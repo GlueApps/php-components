@@ -49,4 +49,31 @@ class BubblingTest extends BaseTestCase
         $this->assertTrue($this->executed1);
         $this->assertTrue($this->executedRoot);
     }
+
+    public function testTheEventBubblingMayBeStopped()
+    {
+        $this->createTree2();
+        $this->executed3 = false;
+        $this->executed1 = false;
+        $this->executedRoot = false;
+
+        $this->component3->on(AbstractComponent::EVENT_AFTER_DELETION, function (AfterDeletionEvent $event) {
+            $this->executed3 = true;
+            $event->stopPropagation();
+        });
+
+        $this->component1->on(AbstractComponent::EVENT_AFTER_DELETION, function (AfterDeletionEvent $event) {
+            $this->executed1 = true;
+        });
+
+        $this->root->on(AbstractComponent::EVENT_AFTER_DELETION, function (AfterDeletionEvent $event) {
+            $this->executedRoot = true;
+        });
+
+        $this->component3->dropChild($this->component5); // Act
+
+        $this->assertTrue($this->executed3);
+        $this->assertFalse($this->executed1);
+        $this->assertFalse($this->executedRoot);
+    }
 }

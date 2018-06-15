@@ -116,8 +116,8 @@ abstract class AbstractComponent
      * cancelled if second argument is specified as false.
      *
      * @param ?AbstractComponent $parent  The parent.
-     * @param bool $registersChild              When is true this component will
-     *                                          be registered as child of the parent.
+     * @param bool $registersChild        When is true this component will
+     *                                    be registered as child of the parent.
      */
     public function setParent(?AbstractComponent $parent, bool $registersChild = true)
     {
