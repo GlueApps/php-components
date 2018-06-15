@@ -9,9 +9,9 @@ use GlueApps\Components\Event\AfterDeletionEvent;
 /**
  * @author Andy Daniel Navarro Taño <andaniel05@gmail.com>
  */
-class AbstractComponentTest extends BaseTestCase
+class BubblingTest extends BaseTestCase
 {
-    public function testOrderInEventBubbling()
+    public function testEventOrderInBubbling()
     {
         $this->createTree2();
         $this->executed3 = false;

@@ -15,12 +15,26 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
  */
 abstract class AbstractComponent
 {
+    /**
+     * Occurs before that a component be inserted in any node of the tree.
+     * Permits cancel the operation.
+     */
     public const EVENT_BEFORE_INSERTION = 'tree.before_insertion';
 
+    /**
+     * Occurs after that a component was inserted in any node of the tree.
+     */
     public const EVENT_AFTER_INSERTION = 'tree.after_insertion';
 
+    /**
+     * Occurs before that a component be deleted from any node of the tree.
+     * Permits cancel the operation.
+     */
     public const EVENT_BEFORE_DELETION = 'tree.before_deletion';
 
+    /**
+     * Occurs after that a component was deleted from any node of the tree.
+     */
     public const EVENT_AFTER_DELETION = 'tree.after_deletion';
 
     /**
