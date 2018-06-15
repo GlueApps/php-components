@@ -8,7 +8,7 @@ use GlueApps\Components\AbstractComponent;
 /**
  * @author Andy Daniel Navarro Taño <andaniel05@gmail.com>
  */
-class TreeMutationEvent extends TreeEvent
+class TreeMutationEvent extends Event
 {
     protected $parent;
 

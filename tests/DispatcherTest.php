@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace GlueApps\Components\Tests;
 
-use GlueApps\Components\Event\TreeEvent;
+use GlueApps\Components\Event\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -29,7 +29,7 @@ class DispatcherTest extends BaseTestCase
     public function testDispatchInvokeToDispatchMethodOnTheEventDispatcher()
     {
         $eventName = uniqid();
-        $event = $this->createMock(TreeEvent::class);
+        $event = $this->createMock(Event::class);
 
         $dispatcher = $this->getMockBuilder(EventDispatcherInterface::class)
             ->setMethods(['dispatch'])
