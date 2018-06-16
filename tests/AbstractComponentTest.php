@@ -4,11 +4,11 @@ declare(strict_types=1);
 namespace GlueApps\Components\Tests;
 
 use GlueApps\Components\AbstractComponent;
+use GlueApps\Components\Event\Event;
 use GlueApps\Components\Event\BeforeInsertionEvent;
 use GlueApps\Components\Event\AfterInsertionEvent;
 use GlueApps\Components\Event\BeforeDeletionEvent;
 use GlueApps\Components\Event\AfterDeletionEvent;
-use GlueApps\Components\Event\Event;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -528,7 +528,7 @@ class AbstractComponentTest extends BaseTestCase
 
         $parent->on(AbstractComponent::EVENT_BEFORE_INSERTION, function (BeforeInsertionEvent $event) use (&$executed, $parent, $child) {
             $executed = true;
-            $this->assertEquals($parent, $event->getSource());
+            $this->assertEquals($parent, $event->getTarget());
             $this->assertEquals($parent, $event->getParent());
             $this->assertEquals($child, $event->getChild());
             $this->assertFalse($parent->hasChild($child));
@@ -605,7 +605,7 @@ class AbstractComponentTest extends BaseTestCase
 
         $parent->on(AbstractComponent::EVENT_AFTER_INSERTION, function (AfterInsertionEvent $event) use (&$executed, $parent, $child) {
             $executed = true;
-            $this->assertEquals($parent, $event->getSource());
+            $this->assertEquals($parent, $event->getTarget());
             $this->assertEquals($parent, $event->getParent());
             $this->assertEquals($child, $event->getChild());
             $this->assertTrue($parent->hasChild($child));
@@ -651,7 +651,7 @@ class AbstractComponentTest extends BaseTestCase
         $parent->addChild($child);
         $parent->on(AbstractComponent::EVENT_BEFORE_DELETION, function (BeforeDeletionEvent $event) use (&$executed, $parent, $child) {
             $executed = true;
-            $this->assertEquals($parent, $event->getSource());
+            $this->assertEquals($parent, $event->getTarget());
             $this->assertEquals($parent, $event->getParent());
             $this->assertEquals($child, $event->getChild());
             $this->assertTrue($parent->hasChild($child));
@@ -671,7 +671,7 @@ class AbstractComponentTest extends BaseTestCase
         $parent->addChild($child);
         $parent->on(AbstractComponent::EVENT_BEFORE_DELETION, function (BeforeDeletionEvent $event) use (&$executed, $parent, $child) {
             $executed = true;
-            $this->assertEquals($parent, $event->getSource());
+            $this->assertEquals($parent, $event->getTarget());
             $this->assertEquals($parent, $event->getParent());
             $this->assertEquals($child, $event->getChild());
             $this->assertTrue($parent->hasChild($child));
@@ -755,7 +755,7 @@ class AbstractComponentTest extends BaseTestCase
 
         $this->component->on(AbstractComponent::EVENT_AFTER_DELETION, function (AfterDeletionEvent $event) use (&$executed) {
             $executed = true;
-            $this->assertEquals($this->component, $event->getSource());
+            $this->assertEquals($this->component, $event->getTarget());
             $this->assertEquals($this->component, $event->getParent());
             $this->assertEquals($this->child1, $event->getChild());
         });
@@ -772,7 +772,7 @@ class AbstractComponentTest extends BaseTestCase
 
         $this->component->on(AbstractComponent::EVENT_AFTER_DELETION, function (AfterDeletionEvent $event) use (&$executed) {
             $executed = true;
-            $this->assertEquals($this->component, $event->getSource());
+            $this->assertEquals($this->component, $event->getTarget());
             $this->assertEquals($this->component, $event->getParent());
             $this->assertEquals($this->child1, $event->getChild());
         });
