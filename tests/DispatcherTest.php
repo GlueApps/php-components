@@ -65,4 +65,12 @@ class DispatcherTest extends BaseTestCase
 
         $this->component->on($eventName, $callback); // Act
     }
+
+    public function testDispatchReturnsTheEventObject()
+    {
+        $event = $this->createMock(Event::class);
+        $eventName = uniqid();
+
+        $this->assertEquals($event, $this->component->dispatch($eventName, $event));
+    }
 }

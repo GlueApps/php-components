@@ -161,12 +161,24 @@ abstract class AbstractComponent
     /**
      * Dispatchs an event on this component.
      *
-     * @param  string       $eventName
+     * @param  string   $eventName
      * @param  ?Event   $event
+     *
+     * @return Event
      */
-    public function dispatch(string $eventName, ?Event $event = null)
+    public function dispatch(string $eventName, ?Event $event = null): Event
     {
+        if (! $event) {
+            $event = new Event($this);
+        }
+
         $this->dispatcher->dispatch($eventName, $event);
+
+        foreach ($this->parents() as $parent) {
+            $parent->dispatch($eventName, $event);
+        }
+
+        return $event;
     }
 
     /**
@@ -237,7 +249,7 @@ abstract class AbstractComponent
     public function addChild(AbstractComponent $child, bool $assignsParent = true): bool
     {
         $beforeInsertionEvent = new BeforeInsertionEvent($this, $this, $child);
-        $this->dispatcher->dispatch(self::EVENT_BEFORE_INSERTION, $beforeInsertionEvent);
+        $this->dispatch(self::EVENT_BEFORE_INSERTION, $beforeInsertionEvent);
 
         if ($beforeInsertionEvent->isCancelled()) {
             return false;
@@ -246,7 +258,7 @@ abstract class AbstractComponent
         $this->children[$child->getUId()] = $child;
 
         $afterInsertionEvent = new AfterInsertionEvent($this, $this, $child);
-        $this->dispatcher->dispatch(self::EVENT_AFTER_INSERTION, $afterInsertionEvent);
+        $this->dispatch(self::EVENT_AFTER_INSERTION, $afterInsertionEvent);
 
         if ($assignsParent) {
             $child->setParent($this, false);
@@ -298,7 +310,7 @@ abstract class AbstractComponent
         }
 
         $beforeDeletionEvent = new BeforeDeletionEvent($this, $this, $child);
-        $this->dispatcher->dispatch(self::EVENT_BEFORE_DELETION, $beforeDeletionEvent);
+        $this->dispatch(self::EVENT_BEFORE_DELETION, $beforeDeletionEvent);
         if ($beforeDeletionEvent->isCancelled()) {
             return false;
         }
@@ -306,7 +318,7 @@ abstract class AbstractComponent
         unset($this->children[$child->getUId()]);
 
         $afterDeletionEvent = new AfterDeletionEvent($this, $this, $child);
-        $this->dispatcher->dispatch(self::EVENT_AFTER_DELETION, $afterDeletionEvent);
+        $this->dispatch(self::EVENT_AFTER_DELETION, $afterDeletionEvent);
 
         foreach ($child->parents() as $parent) {
             $parent->getDispatcher()->dispatch(self::EVENT_AFTER_DELETION, $afterDeletionEvent);

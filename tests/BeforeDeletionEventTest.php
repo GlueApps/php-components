@@ -5,6 +5,7 @@ namespace GlueApps\Components\Tests;
 
 use GlueApps\Components\AbstractComponent;
 use GlueApps\Components\Event\BeforeDeletionEvent;
+use GlueApps\Components\Event\AfterDeletionEvent;
 
 /**
  * @author Andy Daniel Navarro Taño <andaniel05@gmail.com>
@@ -67,5 +68,49 @@ class BeforeDeletionEventTest extends BaseTestCase
 
         $this->assertTrue($executed);
         $this->assertTrue($parent->hasChild($child));
+    }
+
+    public function createMockForDeletionEvents()
+    {
+        $this->parent = $this->getMockBuilder(AbstractComponent::class)
+            ->setMethods(['dispatch'])
+            ->getMockForAbstractClass();
+        $this->parent->expects($this->exactly(2))
+            ->method('dispatch')
+            ->withConsecutive(
+                [
+                    $this->equalTo(AbstractComponent::EVENT_BEFORE_DELETION),
+                    $this->isInstanceOf(BeforeDeletionEvent::class)
+                ],
+                [
+                    $this->equalTo(AbstractComponent::EVENT_AFTER_DELETION),
+                    $this->isInstanceOf(AfterDeletionEvent::class)
+                ]
+            )
+        ;
+
+        $this->child = $this->createComponent();
+
+        // Adds the child to the parent without invoke the insertion events.
+        // Emphasizing that too much knows the SUT.
+        (function ($child) {
+            $this->children = [$child->getUId() => $child];
+        })->call($this->parent, $this->child);
+
+        $this->child->setParent($this->parent, false);
+    }
+
+    public function testTheBeforeDeletionEventAndTheAfterDeletionEventAreTriggeredAcrossTheDispatchMethod1()
+    {
+        $this->createMockForDeletionEvents();
+
+        $this->parent->dropChild($this->child);
+    }
+
+    public function testTheBeforeDeletionEventAndTheAfterDeletionEventAreTriggeredAcrossTheDispatchMethod2()
+    {
+        $this->createMockForDeletionEvents();
+
+        $this->child->setParent(null);
     }
 }

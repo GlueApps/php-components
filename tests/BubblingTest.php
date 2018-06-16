@@ -3,9 +3,6 @@ declare(strict_types=1);
 
 namespace GlueApps\Components\Tests;
 
-use GlueApps\Components\AbstractComponent;
-use GlueApps\Components\Event\AfterDeletionEvent;
-
 /**
  * @author Andy Daniel Navarro Taño <andaniel05@gmail.com>
  */
@@ -14,66 +11,63 @@ class BubblingTest extends BaseTestCase
     public function testEventOrderInBubbling()
     {
         $this->createTree2();
+
         $this->executed3 = false;
         $this->executed1 = false;
         $this->executedRoot = false;
+        $eventName = uniqid();
 
-        $this->component3->on(AbstractComponent::EVENT_AFTER_DELETION, function (AfterDeletionEvent $event) {
-            $this->assertEquals($this->component3, $event->getSource());
-            $this->assertEquals($this->component3, $event->getParent());
-            $this->assertEquals($this->component5, $event->getChild());
+        $this->component3->on($eventName, function ($event) {
             $this->executed3 = true;
-            $event->last = 3;
+            $this->time3 = microtime(true);
         });
 
-        $this->component1->on(AbstractComponent::EVENT_AFTER_DELETION, function (AfterDeletionEvent $event) {
-            $this->assertEquals(3, $event->last);
-            $this->assertEquals($this->component3, $event->getSource());
-            $this->assertEquals($this->component3, $event->getParent());
-            $this->assertEquals($this->component5, $event->getChild());
+        $this->component1->on($eventName, function ($event) {
             $this->executed1 = true;
-            $event->last = 1;
+            $this->time1 = microtime(true);
         });
 
-        $this->root->on(AbstractComponent::EVENT_AFTER_DELETION, function (AfterDeletionEvent $event) {
-            $this->assertEquals(1, $event->last);
-            $this->assertEquals($this->component3, $event->getSource());
-            $this->assertEquals($this->component3, $event->getParent());
-            $this->assertEquals($this->component5, $event->getChild());
+        $this->root->on($eventName, function ($event) {
             $this->executedRoot = true;
+            $this->timeRoot = microtime(true);
         });
 
-        $this->component3->dropChild($this->component5); // Act
+        $this->component3->dispatch($eventName); // Act
 
         $this->assertTrue($this->executed3);
         $this->assertTrue($this->executed1);
         $this->assertTrue($this->executedRoot);
+
+        $this->assertLessThan($this->timeRoot, $this->time1);
+        $this->assertLessThan($this->time1, $this->time3);
     }
 
     public function testTheEventBubblingMayBeStopped()
     {
         $this->createTree2();
+
         $this->executed3 = false;
         $this->executed1 = false;
         $this->executedRoot = false;
+        $eventName = uniqid();
 
-        $this->component3->on(AbstractComponent::EVENT_AFTER_DELETION, function (AfterDeletionEvent $event) {
+        $this->component3->on($eventName, function ($event) {
             $this->executed3 = true;
+        });
+
+        $this->component1->on($eventName, function ($event) {
+            $this->executed1 = true;
             $event->stopPropagation();
         });
 
-        $this->component1->on(AbstractComponent::EVENT_AFTER_DELETION, function (AfterDeletionEvent $event) {
-            $this->executed1 = true;
-        });
-
-        $this->root->on(AbstractComponent::EVENT_AFTER_DELETION, function (AfterDeletionEvent $event) {
+        $this->root->on($eventName, function ($event) {
             $this->executedRoot = true;
         });
 
-        $this->component3->dropChild($this->component5); // Act
+        $this->component3->dispatch($eventName); // Act
 
         $this->assertTrue($this->executed3);
-        $this->assertFalse($this->executed1);
+        $this->assertTrue($this->executed1);
         $this->assertFalse($this->executedRoot);
     }
 }
