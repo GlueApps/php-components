@@ -835,7 +835,7 @@ class AbstractComponentTest extends BaseTestCase
     // Bubbling //
     //////////////
 
-    public function testEventOrderInBubbling()
+    public function testEventsOrderInBubbling()
     {
         $this->createTree2();
 
@@ -847,16 +847,19 @@ class AbstractComponentTest extends BaseTestCase
         $this->component3->on($eventName, function ($event) {
             $this->executed3 = true;
             $this->time3 = microtime(true);
+            $this->event = $event;
         });
 
         $this->component1->on($eventName, function ($event) {
             $this->executed1 = true;
             $this->time1 = microtime(true);
+            $this->assertEquals($this->event, $event);
         });
 
         $this->root->on($eventName, function ($event) {
             $this->executedRoot = true;
             $this->timeRoot = microtime(true);
+            $this->assertEquals($this->event, $event);
         });
 
         $this->component3->dispatch($eventName); // Act

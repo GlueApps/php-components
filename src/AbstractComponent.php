@@ -174,8 +174,8 @@ abstract class AbstractComponent
 
         $this->dispatcher->dispatch($eventName, $event);
 
-        foreach ($this->parents() as $parent) {
-            $parent->dispatch($eventName, $event);
+        if ($this->parent instanceof AbstractComponent) {
+            $this->parent->dispatch($eventName, $event);
         }
 
         return $event;
