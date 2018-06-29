@@ -900,4 +900,69 @@ class AbstractComponentTest extends BaseTestCase
         $this->assertTrue($this->executed1);
         $this->assertFalse($this->executedRoot);
     }
+
+    /////////////
+    // Capture //
+    /////////////
+
+    public function test1()
+    {
+        $this->createTree2();
+
+        $eventName = uniqid();
+        $this->executedCaptureRoot = false;
+        $this->executedCapture1 = false;
+        $this->executed3 = false;
+        $this->executed1 = false;
+        $this->executedRoot = false;
+
+        // Capture
+        //
+
+        $this->root->on($eventName, function ($event) {
+            $this->event = $event;
+            $this->executedCaptureRoot = true;
+            $this->timeCaptureRoot = microtime(true);
+        }, true);
+
+        $this->component1->on($eventName, function ($event) {
+            $this->assertEquals($this->event, $event);
+            $this->executedCapture1 = true;
+            $this->timeCapture1 = microtime(true);
+        }, true);
+
+        // Event execution and bubbling
+        //
+
+        $this->component3->on($eventName, function ($event) {
+            $this->assertEquals($this->event, $event);
+            $this->executed3 = true;
+            $this->time3 = microtime(true);
+        });
+
+        $this->component1->on($eventName, function ($event) {
+            $this->assertEquals($this->event, $event);
+            $this->executed1 = true;
+            $this->time1 = microtime(true);
+        });
+
+        $this->root->on($eventName, function ($event) {
+            $this->assertEquals($this->event, $event);
+            $this->executedRoot = true;
+            $this->timeRoot = microtime(true);
+        });
+
+        $this->component3->dispatch($eventName); // Act
+
+        $this->assertTrue($this->executedCaptureRoot);
+        $this->assertTrue($this->executedCapture1);
+        $this->assertTrue($this->executed3);
+        $this->assertTrue($this->executed1);
+        $this->assertTrue($this->executedRoot);
+
+        $this->assertGreaterThan($this->timeCaptureRoot, $this->timeCapture1);
+        $this->assertGreaterThan($this->timeCapture1, $this->time3);
+        $this->assertGreaterThan($this->time3, $this->time1);
+        $this->assertGreaterThan($this->time1, $this->timeRoot);
+    }
 }

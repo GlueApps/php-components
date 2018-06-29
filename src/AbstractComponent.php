@@ -166,15 +166,23 @@ abstract class AbstractComponent
      *
      * @return Event
      */
-    public function dispatch(string $eventName, ?Event $event = null): Event
+    public function dispatch(string $eventName, ?Event $event = null, bool $capture = true, bool $bubbling = true): Event
     {
         if (! $event) {
             $event = new Event($this);
         }
 
+        // Capture
+        if ($capture) {
+            foreach (array_reverse($this->parents()) as $parent) {
+                $parent->dispatch("capture::{$eventName}", $event, false, false);
+            }
+        }
+
         $this->dispatcher->dispatch($eventName, $event);
 
-        if ($this->parent instanceof AbstractComponent) {
+        // Bubbling
+        if ($bubbling && $this->parent instanceof AbstractComponent) {
             $this->parent->dispatch($eventName, $event);
         }
 
@@ -219,8 +227,12 @@ abstract class AbstractComponent
      * @param  string   $eventName
      * @param  callable $listener
      */
-    public function on(string $eventName, callable $listener)
+    public function on(string $eventName, callable $listener, bool $capture = false)
     {
+        if ($capture) {
+            $eventName = "capture::{$eventName}";
+        }
+
         $this->dispatcher->addListener($eventName, $listener);
     }
 
@@ -375,15 +387,12 @@ abstract class AbstractComponent
      */
     public function getComponentByUId(string $uid): ?AbstractComponent
     {
-        $result = null;
-
         foreach ($this->traverse() as $component) {
             if ($component->getUId() === $uid) {
-                $result = $component;
-                break;
+                return $component;
             }
         }
 
-        return $result;
+        return null;
     }
 }
